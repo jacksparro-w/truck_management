@@ -1,0 +1,234 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Test {
+  id Int @id @default(autoincrement())
+}
+
+enum UserRole {
+  ADMIN
+  DRIVER
+  SUPERVISOR
+}
+
+model User {
+  id              String   @id @default(uuid())
+
+  name            String
+  mobile          String   @unique
+  password        String
+
+  role            UserRole
+
+  refreshToken    String?
+
+  isActive        Boolean @default(true)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  trucks          Truck[]
+  trips           Trip[]
+}
+
+enum TruckStatus {
+  AVAILABLE
+  IN_TRANSIT
+  MAINTENANCE
+  OFFLINE
+}
+
+model Truck {
+  id String @id @default(uuid())
+
+  truckNumber String @unique
+  truckType   String
+
+  status TruckStatus @default(AVAILABLE)
+
+  driverId String?
+
+  driver User? @relation(fields: [driverId], references: [id])
+
+  trips Trip[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([truckNumber])
+}
+
+model CargoType {
+  id String @id @default(uuid())
+
+  name String @unique
+
+  isActive Boolean @default(true)
+
+  trips Trip[]
+
+  createdAt DateTime @default(now())
+}
+
+enum DestinationType {
+  BERTH
+  YARD
+  TRANSIT
+}
+
+model Destination {
+  id String @id @default(uuid())
+
+  name String
+
+  type DestinationType
+
+  latitude  Decimal @db.Decimal(10, 7)
+  longitude Decimal @db.Decimal(10, 7)
+
+  radius Int
+
+  trips Trip[]
+
+  createdAt DateTime @default(now())
+
+  @@index([type])
+}
+
+enum CargoStatus {
+  LOADED
+  EMPTY
+}
+
+enum TripStatus {
+  CREATED
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+model Trip {
+  id String @id @default(uuid())
+
+  truckId  String
+  driverId String
+
+  cargoStatus CargoStatus
+
+  cargoTypeId String?
+
+  destinationId String
+
+  status TripStatus @default(CREATED)
+
+  startedAt   DateTime?
+  completedAt DateTime?
+
+  truck Truck @relation(fields: [truckId], references: [id])
+
+  driver User @relation(fields: [driverId], references: [id])
+
+  cargoType CargoType? @relation(fields: [cargoTypeId], references: [id])
+
+  destination Destination @relation(fields: [destinationId], references: [id])
+
+  gpsLocations GPSLocation[]
+  alerts       Alert[]
+
+  createdAt DateTime @default(now())
+
+  @@index([truckId])
+  @@index([driverId])
+  @@index([status])
+}
+
+model GPSLocation {
+  id BigInt @id @default(autoincrement())
+
+  tripId String
+
+  latitude  Decimal @db.Decimal(10, 7)
+  longitude Decimal @db.Decimal(10, 7)
+
+  speed   Float?
+  heading Float?
+
+  createdAt DateTime @default(now())
+
+  trip Trip @relation(fields: [tripId], references: [id])
+
+  @@index([tripId])
+  @@index([createdAt])
+}
+
+enum AlertType {
+  WRONG_ROUTE
+  CONGESTION
+}
+
+enum AlertSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+model Alert {
+  id String @id @default(uuid())
+
+  tripId String
+
+  type AlertType
+
+  severity AlertSeverity
+
+  title   String
+  message String
+
+  isResolved Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+  trip Trip @relation(fields: [tripId], references: [id])
+
+  @@index([type])
+  @@index([createdAt])
+}
+
+model CongestionEvent {
+  id String @id @default(uuid())
+
+  latitude  Decimal @db.Decimal(10, 7)
+  longitude Decimal @db.Decimal(10, 7)
+
+  radius Int
+
+  truckCount Int
+
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model AuditLog {
+  id String @id @default(uuid())
+
+  userId String?
+
+  action String
+
+  entity String
+
+  entityId String
+
+  metadata Json?
+
+  createdAt DateTime @default(now())
+
+  @@index([entity])
+}

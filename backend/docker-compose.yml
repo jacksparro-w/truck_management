@@ -1,0 +1,50 @@
+version: '3.9'
+
+services:
+
+  api:
+    build: .
+    container_name: truck-api
+
+    restart: always
+
+    ports:
+      - "5000:5000"
+
+    env_file:
+      - .env.production
+
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres:16
+
+    restart: always
+
+    container_name: truck-db
+
+    environment:
+      POSTGRES_DB: truck_tracking
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+
+    restart: always
+
+    container_name: truck-redis
+
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres_data:

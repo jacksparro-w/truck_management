@@ -1,0 +1,1 @@
+require("./tests/test-socket");
