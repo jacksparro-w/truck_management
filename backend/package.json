@@ -10,8 +10,7 @@
     "test:socket": "node test-socket.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:studio": "prisma studio",
-    "postinstall": "prisma generate"
+    "prisma:studio": "prisma studio"
   },
   "prisma": {
     "seed": "node prisma/seed.js"
