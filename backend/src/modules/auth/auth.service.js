@@ -35,9 +35,24 @@ const loginUser = async ({
   mobile,
   password,
 }) => {
+  // Defensive validation: ensure `mobile` is a non-empty string
+  if (!mobile || (typeof mobile !== "string" && typeof mobile !== "number")) {
+    const error = new Error("Mobile is required");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const mobileStr = String(mobile).trim();
+
+  if (!mobileStr) {
+    const error = new Error("Mobile is required");
+    error.statusCode = 400;
+    throw error;
+  }
+
   const user = await prisma.user.findUnique({
     where: {
-      mobile,
+      mobile: mobileStr,
     },
   });
 
