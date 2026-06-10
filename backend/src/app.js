@@ -19,27 +19,15 @@ const app = express();
 const alertRoutes =
 require("./modules/alerts/alert.routes");
 
-app.use(
-  "/api/alerts",
-  alertRoutes
-);
-app.use(cors());
-
 const congestionRoutes =
 require(
 "./modules/congestion/congestion.routes"
 );
 
-app.use(
-"/api/congestion",
-congestionRoutes
-);
 const rateLimiter =
 require(
 "./middleware/rateLimit.middleware"
 );
-
-app.use(rateLimiter);
 
 const {
   swaggerUi,
@@ -48,21 +36,22 @@ const {
 "./config/swagger"
 );
 
-app.use(
-"/api/docs",
-swaggerUi.serve,
-swaggerUi.setup(specs)
-);
-
 const dashboardRoutes =
 require(
 "./modules/dashboard/dashboard.routes"
 );
 
-app.use(
-"/api/dashboard",
-dashboardRoutes
-);
+// CORS configuration - MUST be before other middleware
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN || "*",
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+app.use(cors(corsOptions));
+
+// Security and compression
 app.use(
   helmet({
     crossOriginResourcePolicy: false,
@@ -71,6 +60,7 @@ app.use(
 
 app.use(compression());
 
+// Body parsers
 app.use(express.json());
 
 app.use(
@@ -79,8 +69,13 @@ app.use(
   })
 );
 
+// Logging
 app.use(morgan("dev"));
 
+// Rate limiting
+app.use(rateLimiter);
+
+// Health check route
 app.get("/health", (req, res) => {
   res.status(200).json({
     success: true,
@@ -89,20 +84,26 @@ app.get("/health", (req, res) => {
   });
 });
 
+// API Documentation
+app.use(
+  "/api/docs",
+  swaggerUi.serve,
+  swaggerUi.setup(specs)
+);
+
+// API Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/system", systemRoutes);
 app.use("/api/trucks", truckRoutes);
-
 app.use("/api/cargo", cargoRoutes);
-
 app.use("/api/destinations", destinationRoutes);
-
 app.use("/api/trips", tripRoutes);
+app.use("/api/tracking", trackingRoutes);
+app.use("/api/alerts", alertRoutes);
+app.use("/api/congestion", congestionRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
-app.use(
-  "/api/tracking",
-  trackingRoutes
-);
+// Error handling
 app.use(errorHandler);
 
 module.exports = app;
