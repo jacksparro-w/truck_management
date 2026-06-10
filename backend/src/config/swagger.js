@@ -13,8 +13,14 @@ const options = {
 
     servers: [
       {
-        url: "http://localhost:5000",
-        description: "Development Server",
+        url:
+          process.env.NODE_ENV === "production"
+            ? "https://truck-management-3.onrender.com"
+            : "http://localhost:5000",
+        description:
+          process.env.NODE_ENV === "production"
+            ? "Production Server"
+            : "Development Server",
       },
     ],
 
@@ -35,9 +41,7 @@ const options = {
     ],
   },
 
-  apis: [
-    "./src/docs/*.js",
-  ],
+  apis: ["./src/docs/*.js"],
 };
 
 const specs = swaggerJsdoc(options);
