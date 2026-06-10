@@ -47,6 +47,15 @@ const createUserHandler = async (req, res, next) => {
 
 const login = async (req, res, next) => {
   try {
+    // Debug: log minimal login payload to help diagnose deployed failures
+    // (do not log passwords)
+    console.log("Login attempt:", {
+      mobile: req.body && req.body.mobile,
+      hasPassword: !!(req.body && req.body.password),
+      keys: req.body ? Object.keys(req.body) : [],
+      remoteAddr: req.ip || (req.connection && req.connection.remoteAddress),
+    });
+
     if (!validateRequest(req, res)) {
       return;
     }
