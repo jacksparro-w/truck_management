@@ -6,7 +6,7 @@ const {
 } = require("../../config/jwt");
 
 const createUser = async (data) => {
-  const existingUser = await prisma.user.findUnique({
+  const existingUser = await prisma.user.findFirst({
     where: {
       mobile: data.mobile,
     },
@@ -50,7 +50,7 @@ const loginUser = async ({
     throw error;
   }
 
-  const user = await prisma.user.findUnique({
+  const user = await prisma.user.findFirst({
     where: {
       mobile: mobileStr,
     },
