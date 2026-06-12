@@ -50,7 +50,7 @@ const loginUser = async ({
     throw error;
   }
 
-  const user = await prisma.user.findFirst({
+  const user = await prisma.user.findUnique({
     where: {
       mobile: mobileStr,
     },

@@ -45,9 +45,7 @@ const startServer = async () => {
 
   const io = new Server(server, {
     cors: {
-      origin: process.env.CORS_ORIGIN || "*",
-      credentials: true,
-      methods: ["GET", "POST"],
+      origin: "*",
     },
   });
 
