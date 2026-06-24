@@ -230,6 +230,48 @@ const run = async () => {
       "GET /api/auth/me"
     );
 
+    const drivers =
+      await authedRequest(
+        "admin",
+        "/api/drivers"
+      );
+    expectSuccess(
+      drivers,
+      "GET /api/drivers"
+    );
+
+    const updateDriverStatus =
+      await authedRequest(
+        "admin",
+        `/api/drivers/${createdIds.users[1]}/status`,
+        {
+          method: "PUT",
+          body: JSON.stringify({
+            isActive: false,
+          }),
+        }
+      );
+    expectSuccess(
+      updateDriverStatus,
+      "PUT /api/drivers/:id/status"
+    );
+
+    const restoreDriverStatus =
+      await authedRequest(
+        "admin",
+        `/api/drivers/${createdIds.users[1]}/status`,
+        {
+          method: "PUT",
+          body: JSON.stringify({
+            isActive: true,
+          }),
+        }
+      );
+    expectSuccess(
+      restoreDriverStatus,
+      "PUT /api/drivers/:id/status restore"
+    );
+
     const cargo =
       await authedRequest(
         "admin",

@@ -23,7 +23,8 @@ const congestionRoutes =
 require(
 "./modules/congestion/congestion.routes"
 );
-
+const driverRoutes =
+  require("./modules/drivers/driver.routes");
 const rateLimiter =
 require(
 "./middleware/rateLimit.middleware"
@@ -102,6 +103,7 @@ app.use("/api/tracking", trackingRoutes);
 app.use("/api/alerts", alertRoutes);
 app.use("/api/congestion", congestionRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/drivers", driverRoutes);
 
 // Error handling
 app.use(errorHandler);

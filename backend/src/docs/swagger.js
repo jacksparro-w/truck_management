@@ -1593,3 +1593,47 @@
  *               success: false
  *               database: "disconnected"
  */
+
+/**
+ * @swagger
+ * /api/drivers:
+ *   get:
+ *     tags:
+ *       - Drivers
+ *     summary: Get All Drivers
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Driver List
+ */
+
+/**
+ * @swagger
+ * /api/drivers/{id}/status:
+ *   put:
+ *     tags:
+ *       - Drivers
+ *     summary: Activate or Deactivate Driver
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               isActive:
+ *                 type: boolean
+ *                 example: false
+ *     responses:
+ *       200:
+ *         description: Driver Updated
+ */
